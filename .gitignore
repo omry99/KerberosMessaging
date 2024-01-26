@@ -9,6 +9,7 @@
 **/Release/
 **/ipch/
 **/cryptopp880/
+**/x64/
 
 # Visual Studio user-specific files
 *.suo
