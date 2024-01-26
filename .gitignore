@@ -1,0 +1,91 @@
+# Visual Studio temporary files
+.vscode/
+.vs/
+/bin/
+/obj/
+/debug/
+/Debug/
+/release/
+/Release/
+/ipch/
+/cryptopp880/
+
+# Visual Studio user-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Compiled files
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.aps
+*.lib
+*.exp
+*.sbr
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# SASS and SCSS files
+.sass-cache/
+
+# Python pycache
+__pycache__/
+
+# Python environment
+venv/
+*.pyc
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# User-specific Python environment files
+*.pyproj.user
+*.pyproj.user.*
+*.suo
+*.user
+*.sln.docstates
+
+# User-specific data files
+*.suo
+*.user
+*.sln.docstates
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# PyCharm-specific files and directories
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+__pycache__/
+
+# Miscellaneous
+Thumbs.db
+Desktop.ini
+*.log
