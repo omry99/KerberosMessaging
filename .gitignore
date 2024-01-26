@@ -1,14 +1,14 @@
 # Visual Studio temporary files
 .vscode/
 .vs/
-/bin/
-/obj/
-/debug/
-/Debug/
-/release/
-/Release/
-/ipch/
-/cryptopp880/
+**/bin/
+**/obj/
+**/debug/
+**/Debug/
+**/release/
+**/Release/
+**/ipch/
+**/cryptopp880/
 
 # Visual Studio user-specific files
 *.suo
