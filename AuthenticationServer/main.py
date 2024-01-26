@@ -8,7 +8,7 @@ def main():
     import os
     os.system("del defensive.db /f")
     os.system(
-        'del \"D:\\Files\\University\\מבוא לאבטחת המרחב המקוון\\ממן 16\\KerberosMessaging\\Maman16Client\\Maman16Client\\me.info\" /f')
+        'del \"D:\\Files\\University\\מבוא לאבטחת המרחב המקוון\\ממן 16\\KerberosMessaging\\Client\\Client\\me.info\" /f')
 
     file_server = FileServer()
     file_server.serve()
