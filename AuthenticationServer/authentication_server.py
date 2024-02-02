@@ -1,28 +1,35 @@
 import logging
 import socket
-import sqlite3
-import os
 from pathlib import Path
 import threading
 
 from requests import create_request_from_data
 from request_handler import RequestHandler
+from user_client import UserClient
 
 logger = logging.getLogger(__name__)
 
 CONFIG_FILE_NAME = "port.info"
-DEFAULT_PORT = 1357
+DEFAULT_PORT = 1256
 MIN_PORT = 1025
 MAX_PORT = 65535
 LOCALHOST = '127.0.0.1'
-DATABASE_NAME = r"defensive.db"
+CLIENTS_DATA_FILE_NAME = "clients"
 BUFFER_SIZE = 1024
-RECEIVED_FILES_FOLDER_NAME = "ReceivedFiles"
+
+CLIENT_ID_FIELD_END_INDEX = 16
+USER_NAME_FIELD_SIZE = 255
+USER_NAME_FIELD_START_INDEX = CLIENT_ID_FIELD_END_INDEX
+USER_NAME_FIELD_END_INDEX = USER_NAME_FIELD_START_INDEX + USER_NAME_FIELD_SIZE
+PASS_HASH_FIELD_SIZE = 32
+PASS_HASH_FIELD_START_INDEX = USER_NAME_FIELD_END_INDEX
+PASS_HASH_FIELD_END_INDEX = PASS_HASH_FIELD_START_INDEX + PASS_HASH_FIELD_SIZE
+LAST_SEEN_FIELD_START_INDEX = PASS_HASH_FIELD_END_INDEX
 
 
-class FileServer:
+class AuthenticationServer:
     def __init__(self) -> None:
-        logger.info('Setting up server...')
+        logger.info('Setting up authentication server...')
 
         if Path(CONFIG_FILE_NAME).is_file():
             with open(CONFIG_FILE_NAME, 'r') as config_file:
@@ -36,13 +43,9 @@ class FileServer:
             logger.warning(f"{CONFIG_FILE_NAME} does not exist, using default port {DEFAULT_PORT}")
             self.port = DEFAULT_PORT
 
-        if not Path(RECEIVED_FILES_FOLDER_NAME).exists():
-            os.mkdir(RECEIVED_FILES_FOLDER_NAME)
-
-        logger.info('Connecting to DB...')
-        self.db_conn = sqlite3.connect(DATABASE_NAME, check_same_thread=False)
-        self._init_db()
-        self.request_handler = RequestHandler(self.db_conn, RECEIVED_FILES_FOLDER_NAME)
+        self.users_data = {}
+        self._init_ram_records()
+        self.request_handler = RequestHandler(self)
 
     def serve(self) -> None:
         logger.info(f'Listening for clients on port {self.port}...')
@@ -56,7 +59,7 @@ class FileServer:
                 client_thread = threading.Thread(target=self._handle_client, args=(conn,))
                 client_thread.start()
 
-    def _handle_client(self, conn):
+    def _handle_client(self, conn) -> None:
         with conn:
             while True:
                 data = self._recv_all_data(conn)
@@ -69,30 +72,18 @@ class FileServer:
                 if response:
                     conn.sendall(response.pack())
 
-    def _init_db(self) -> None:
-        cursor = self.db_conn.cursor()
-        # Create the tables if they don't exist
-        clients_table_schema = '''
-            CREATE TABLE IF NOT EXISTS clients (
-                ID BLOB(16) NOT NULL,
-                Name TEXT(255),
-                PublicKey BLOB(160),
-                LastSeen DATETIME,
-                AesKey BLOB(128),
-                PRIMARY KEY (ID)
-            )
-        '''
-        cursor.execute(clients_table_schema)
-        files_table_schema = '''
-                CREATE TABLE IF NOT EXISTS files (
-                    ID BLOB(16) NOT NULL,
-                    FileName TEXT(255),
-                    PathName TEXT(255),
-                    Verified BOOLEAN
-                )
-            '''
-        cursor.execute(files_table_schema)
-        self.db_conn.commit()
+    def _init_ram_records(self) -> None:
+        if Path(CLIENTS_DATA_FILE_NAME).is_file():
+            logger.info('Loading disk records into RAM...')
+            with open(CLIENTS_DATA_FILE_NAME, 'r') as f:
+                client_entries = f.readlines()
+            for client_entry in client_entries:
+                client_id = client_entry[:CLIENT_ID_FIELD_END_INDEX].encode()
+                user_name = client_entry[USER_NAME_FIELD_START_INDEX:USER_NAME_FIELD_END_INDEX]
+                pass_hash = client_entry[PASS_HASH_FIELD_START_INDEX:PASS_HASH_FIELD_END_INDEX]
+                last_seen = client_entry[LAST_SEEN_FIELD_START_INDEX:]
+                user_client = UserClient(client_id, user_name, pass_hash, last_seen)
+                self.users_data[client_id] = user_client
 
     def _recv_all_data(self, conn: socket) -> bytes:
         data = b""

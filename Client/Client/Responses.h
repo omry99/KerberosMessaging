@@ -47,12 +47,12 @@ public:
 	[[nodiscard]] static int getExpectedCode();
 };
 
-class KeyResponse : public NonEmptyResponse
+class SymmetricKeyResponse : public NonEmptyResponse
 {
 public:
-	KeyResponse(const char* buffer, size_t bufferSize);
+	SymmetricKeyResponse(const char* buffer, size_t bufferSize);
 
-	explicit KeyResponse(const Buffer& buffer);
+	explicit SymmetricKeyResponse(const Buffer& buffer);
 
 	[[nodiscard]] static int getExpectedCode();
 
@@ -62,11 +62,18 @@ private:
 	std::string m_encryptedAesKey;
 };
 
-class AcceptReconnectResponse final : public KeyResponse
+
+
+
+
+
+
+
+class AcceptReconnectResponse final : public SymmetricKeyResponse
 {
 public:
 	// Some c'tors
-	using KeyResponse::KeyResponse;
+	using SymmetricKeyResponse::SymmetricKeyResponse;
 
 	[[nodiscard]] static int getExpectedCode();
 };

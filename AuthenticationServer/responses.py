@@ -1,6 +1,8 @@
 import struct
 
-SERVER_VERSION = 3
+from encrypted_key import EncryptedKey
+from ticket import Ticket
+from server_version import SERVER_VERSION
 
 
 class Response:
@@ -27,47 +29,20 @@ class Response:
 
 
 class RegistrationSuccessResponse(Response):
-    def __init__(self, client_id) -> None:
-        super().__init__(code=2100, payload=client_id)
+    def __init__(self, client_id: bytes) -> None:
+        super().__init__(code=1600, payload=client_id)
 
 
 class RegistrationFailedResponse(Response):
     def __init__(self) -> None:
-        super().__init__(code=2101, payload=b'')
+        super().__init__(code=1601, payload=b'')
 
 
-class KeyResponse(Response):
-    def __init__(self, client_id: bytes, enc_aes_key: bytes) -> None:
-        super().__init__(code=2102, payload=client_id + enc_aes_key)
-
-
-class ReceivedFileResponse(Response):
-    def __init__(self, client_id: bytes, content_size: int, file_name: str, checksum: int) -> None:
-        content_size_bytes = struct.pack('I', content_size)
-        checksum_bytes = struct.pack('I', checksum)
-
-        padded_file_name_requird_len = 255
-        encoded_string = file_name.encode('utf-8')
-        padded_file_name = encoded_string.ljust(padded_file_name_requird_len, b'\x00')
-
-        super().__init__(code=2103, payload=client_id + content_size_bytes + padded_file_name + checksum_bytes)
-
-
-class RequestReceivedResponse(Response):
-    def __init__(self, client_id) -> None:
-        super().__init__(code=2104, payload=client_id)
-
-
-class AcceptedReconnectResponse(Response):
-    def __init__(self, client_id: bytes, enc_aes_key: bytes) -> None:
-        super().__init__(code=2105, payload=client_id + enc_aes_key)
-
-
-class RejectedReconnectResponse(Response):
-    def __init__(self, client_id: bytes) -> None:
-        super().__init__(code=2106, payload=client_id)
+class SymmetricKeyResponse(Response):
+    def __init__(self, client_id: bytes, enc_aes_key: EncryptedKey, ticket: Ticket) -> None:
+        super().__init__(code=1603, payload=client_id + enc_aes_key.pack() + ticket.pack())
 
 
 class GeneralFailureResponse(Response):
     def __init__(self) -> None:
-        super().__init__(code=2107, payload=b'')
+        super().__init__(code=1609, payload=b'')

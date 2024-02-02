@@ -1,17 +1,17 @@
 import logging
-from file_server import FileServer
+from authentication_server import AuthenticationServer
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 def main():
     import os
-    os.system("del defensive.db /f")
+    os.system("del clients /f")
     os.system(
-        'del \"D:\\Files\\University\\מבוא לאבטחת המרחב המקוון\\ממן 16\\KerberosMessaging\\Client\\Client\\me.info\" /f')
+         'del \"D:\\Files\\University\\מבוא לאבטחת המרחב המקוון\\ממן 16\\KerberosMessaging\\Client\\Client\\me.info\" /f')
 
-    file_server = FileServer()
-    file_server.serve()
+    authenticaion_server = AuthenticationServer()
+    authenticaion_server.serve()
 
 
 if __name__ == '__main__':

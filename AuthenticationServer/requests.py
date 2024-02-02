@@ -8,6 +8,9 @@ CODE_END_INDEX = 19
 PAYLOAD_SIZE_START_INDEX = 19
 PAYLOAD_SIZE_END_INDEX = 23
 
+USER_NAME_END_INDEX = 255
+SERVER_ID_END_INDEX = 16
+
 
 class Request:
     def __init__(self, data: bytes) -> None:
@@ -24,20 +27,10 @@ def create_request_from_data(data: bytes) -> Request:
         raise Exception(f"Data too short to be a response")
 
     code = struct.unpack('h', data[CODE_START_INDEX:CODE_END_INDEX])[0]
-    if code == 1025:
+    if code == 1024:
         return RegisterRequest(data)
-    elif code == 1026:
-        return KeyRequest(data)
     elif code == 1027:
-        return ReconnectRequest(data)
-    elif code == 1028:
-        return FileRequest(data)
-    elif code == 1029:
-        return ValidCrcRequest(data)
-    elif code == 1030:
-        return InvalidCrcRequest(data)
-    elif code == 1031:
-        return LastInvalidCrcRequest(data)
+        return SymmetricKeyRequest(data)
     else:
         return Request(data)
 
@@ -45,43 +38,12 @@ def create_request_from_data(data: bytes) -> Request:
 class RegisterRequest(Request):
     def __init__(self, data: bytes) -> None:
         super().__init__(data=data)
-        self.name = self.payload.decode()
+        self.name = self.payload[:USER_NAME_END_INDEX].decode()
+        self.password = self.payload[USER_NAME_END_INDEX:].decode()
 
 
-class KeyRequest(Request):
+class SymmetricKeyRequest(Request):
     def __init__(self, data: bytes) -> None:
         super().__init__(data=data)
-        self.name = self.payload[:255].decode()
-        self.public_key = self.payload[255:]
-
-
-class ReconnectRequest(Request):
-    def __init__(self, data: bytes) -> None:
-        super().__init__(data=data)
-        self.name = self.payload[:255].decode()
-
-
-class FileRequest(Request):
-    def __init__(self, data: bytes) -> None:
-        super().__init__(data=data)
-        self.content_size: int = struct.unpack('I', self.payload[:4])[0]
-        self.file_name = self.payload[4:4 + 255].decode()
-        self.message_content = self.payload[4 + 255:]
-
-
-class CrcRequest(Request):
-    def __init__(self, data: bytes) -> None:
-        super().__init__(data=data)
-        self.file_name = self.payload.decode()
-
-
-class ValidCrcRequest(CrcRequest):
-    pass
-
-
-class InvalidCrcRequest(CrcRequest):
-    pass
-
-
-class LastInvalidCrcRequest(CrcRequest):
-    pass
+        self.server_id = self.payload[:SERVER_ID_END_INDEX]
+        self.nonce = self.payload[SERVER_ID_END_INDEX:]

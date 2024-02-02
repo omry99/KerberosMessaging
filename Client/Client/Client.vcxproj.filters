@@ -39,7 +39,7 @@
     <ClCompile Include="File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileClient.cpp">
+    <ClCompile Include="MessageClient.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Responses.cpp">
@@ -83,7 +83,7 @@
     <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileClient.h">
+    <ClInclude Include="MessageClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

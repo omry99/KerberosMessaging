@@ -27,15 +27,36 @@ Request::Request(const ClientId& clientId, uint16_t code)
 {
 }
 
-RegistrationRequest::RegistrationRequest(const std::string& username):
-	Request(ClientId{0}, 1025)
+RegistrationRequest::RegistrationRequest(const std::string& username,
+                                         const std::string& password):
+	Request(ClientId{0}, 1024)
 {
 	std::string paddedUsername = username;
 	paddedUsername.insert(paddedUsername.end(), USERNAME_FIELD_SIZE - paddedUsername.size(), '\0');
+	std::string paddedPassword = password;
+	paddedPassword.insert(paddedPassword.end(), PASSWORD_FIELD_SIZE - paddedUsername.size(), '\0');
 
-	m_payloadSize = static_cast<uint32_t>(paddedUsername.size());
+	m_payloadSize = static_cast<uint32_t>(paddedUsername.size()) + static_cast<uint32_t>(paddedPassword.size());
 	m_payload.insert(m_payload.end(), paddedUsername.begin(), paddedUsername.end());
+	m_payload.insert(m_payload.end(), paddedPassword.begin(), paddedPassword.end());
 }
+
+SymmetricKeyRequest::SymmetricKeyRequest(const ClientId& clientId, 
+                                         const ServerId& serverId,
+                                         const uint64_t& nonce):
+	Request(clientId, 1027)
+{
+	m_payloadSize = static_cast<uint32_t>(serverId.size()) + sizeof(uint64_t);
+	m_payload.insert(m_payload.end(), serverId.begin(), serverId.end());
+
+	for (size_t i = 0; i < sizeof(uint64_t); ++i)
+	{
+		auto byte = static_cast<uint8_t>((nonce >> (i * 8)) & 0xFF);
+		m_payload.push_back(byte);
+	}
+}
+
+
 
 ClientPublicKeyRequest::ClientPublicKeyRequest(const std::string& username, const ClientId& clientId, const std::string& publicKey)
 	: Request(clientId, 1026)

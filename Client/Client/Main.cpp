@@ -1,5 +1,5 @@
 #include "AutoWsa.h"
-#include "FileClient.h"
+#include "MessageClient.h"
 
 #include <iostream>
 
@@ -9,8 +9,8 @@ int main()
 	{
 		AutoWsa wsa;
 
-		FileClient fileClient;
-		fileClient.sendFile();
+		MessageClient messageClient;
+		messageClient.sendFile();
 	}
 	catch (const std::exception& exception)
 	{

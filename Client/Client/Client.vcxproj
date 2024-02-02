@@ -147,7 +147,7 @@
     <ClCompile Include="AesWrapper.cpp" />
     <ClCompile Include="Base64Wrapper.cpp" />
     <ClCompile Include="Checksum.cpp" />
-    <ClCompile Include="FileClient.cpp" />
+    <ClCompile Include="MessageClient.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Requests.cpp" />
     <ClCompile Include="Responses.cpp" />
@@ -160,7 +160,7 @@
     <ClInclude Include="AesWrapper.h" />
     <ClInclude Include="Base64Wrapper.h" />
     <ClInclude Include="Checksum.h" />
-    <ClInclude Include="FileClient.h" />
+    <ClInclude Include="MessageClient.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Responses.h" />

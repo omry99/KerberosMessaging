@@ -79,28 +79,34 @@ std::string RegistrationSuccessResponse::getClientIdAsAscii() const
 
 int RegistrationSuccessResponse::getExpectedCode()
 {
-	return 2100;
+	return 1600;
 }
 
-KeyResponse::KeyResponse(const char* buffer, size_t bufferSize): NonEmptyResponse(buffer, bufferSize)
+SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize): NonEmptyResponse(buffer, bufferSize)
 {
 	m_encryptedAesKey = std::string(payload.data() + m_clientId.size(), payloadSize - m_clientId.size());
 }
 
-KeyResponse::KeyResponse(const Buffer& buffer)
-	: KeyResponse(buffer.data(), buffer.size())
+SymmetricKeyResponse::SymmetricKeyResponse(const Buffer& buffer)
+	: SymmetricKeyResponse(buffer.data(), buffer.size())
 {
 }
 
-int KeyResponse::getExpectedCode()
+int SymmetricKeyResponse::getExpectedCode()
 {
-	return 2102;
+	return 1603;
 }
 
-std::string KeyResponse::getEncryptedAesKey() const
+std::string SymmetricKeyResponse::getEncryptedAesKey() const
 {
 	return m_encryptedAesKey;
 }
+
+
+
+
+
+
 
 int AcceptReconnectResponse::getExpectedCode()
 {
