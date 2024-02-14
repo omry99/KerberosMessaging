@@ -146,7 +146,7 @@
   <ItemGroup>
     <ClCompile Include="AesWrapper.cpp" />
     <ClCompile Include="Base64Wrapper.cpp" />
-    <ClCompile Include="Checksum.cpp" />
+    <ClCompile Include="Hash.cpp" />
     <ClCompile Include="MessageClient.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Requests.cpp" />
@@ -159,7 +159,7 @@
   <ItemGroup>
     <ClInclude Include="AesWrapper.h" />
     <ClInclude Include="Base64Wrapper.h" />
-    <ClInclude Include="Checksum.h" />
+    <ClInclude Include="Hash.h" />
     <ClInclude Include="MessageClient.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="File.h" />
@@ -169,6 +169,7 @@
     <ClInclude Include="AutoWsa.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="Requests.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

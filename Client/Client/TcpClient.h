@@ -14,11 +14,15 @@ class TcpClient
 public:
 	TcpClient();
 
-	DELETE_COPY(TcpClient);
+	//DELETE_COPY(TcpClient);
+	//TcpClient(TcpClient&) = default;
 
-	DELETE_MOVE(TcpClient);
+	//DELETE_MOVE(TcpClient);
+	//TcpClient(TcpClient&&) = default;
 
 	~TcpClient();
+
+	void disconnect();
 
 	void connectToServer(const std::string& serverIp, uint16_t serverPort);
 

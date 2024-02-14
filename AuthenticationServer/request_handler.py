@@ -71,6 +71,7 @@ class RequestHandler:
             f.write(client_entry)
 
         # Add the user to RAM records
+        # TODO: hash mismatch...
         user_client = UserClient(client_id.bytes, user_name, pass_hash, time.ctime())
         self.users_data[client_id.bytes] = user_client
 

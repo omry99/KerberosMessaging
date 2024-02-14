@@ -16,13 +16,32 @@ TcpClient::TcpClient()
 
 TcpClient::~TcpClient()
 {
+	try
+	{
+		disconnect();
+	}
+	catch (...)
+	{
+		std::cout << "Caught an exception in ~TcpClient" << std::endl;
+	}
+}
+
+void TcpClient::disconnect()
+{
+	if (!m_connected)
+	{
+		return;
+	}
+
 	if (m_socket != INVALID_SOCKET)
 	{
 		if (closesocket(m_socket) == SOCKET_ERROR)
 		{
-			std::cout << "closesocket failed with error code " << WSAGetLastError() << std::endl;
+			throw std::runtime_error("closesocket failed with error code " + std::to_string(WSAGetLastError()));
 		}
 	}
+
+	m_connected = false;
 }
 
 void TcpClient::connectToServer(const std::string& serverIp, uint16_t serverPort)

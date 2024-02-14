@@ -8,7 +8,7 @@
 class AesWrapper
 {
 public:
-	static constexpr uint32_t DEFAULT_KEY_LENGTH = 16;
+	static constexpr uint32_t DEFAULT_KEY_LENGTH = 32;
 
 	AesWrapper();
 	AesWrapper(const unsigned char* key, uint32_t size);
@@ -23,8 +23,8 @@ public:
 	[[nodiscard]] const unsigned char* getKey() const;
 	static unsigned char* generateKey(unsigned char* buffer, uint32_t length);
 
-	[[nodiscard]] std::string encrypt(const char* plain, uint32_t length);
-	[[nodiscard]] std::string decrypt(const char* cipher, uint32_t length);
+	[[nodiscard]] std::pair<std::string, std::string> encrypt(const char* plain, uint32_t length);
+	[[nodiscard]] std::string decrypt(const char* cipher, uint32_t length, const std::string& ivString);
 
 private:
 	unsigned char m_key[DEFAULT_KEY_LENGTH];

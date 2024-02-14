@@ -56,69 +56,31 @@ SymmetricKeyRequest::SymmetricKeyRequest(const ClientId& clientId,
 	}
 }
 
-
-
-ClientPublicKeyRequest::ClientPublicKeyRequest(const std::string& username, const ClientId& clientId, const std::string& publicKey)
-	: Request(clientId, 1026)
+SendSymmetricKeyRequest::SendSymmetricKeyRequest(const ClientId& clientId, 
+                                                 const Authenticator& authenticator,
+                                                 const std::string& ticket) :
+	Request(clientId, 1028)
 {
-	std::string paddedUsername = username;
-	paddedUsername.insert(paddedUsername.end(), 255 - paddedUsername.size(), '\0');
-
-	m_payloadSize = static_cast<uint32_t>(paddedUsername.size()) + static_cast<uint32_t>(publicKey.size());
-	m_payload.insert(m_payload.end(), paddedUsername.begin(), paddedUsername.end());
-	m_payload.insert(m_payload.end(), publicKey.begin(), publicKey.end());
+	m_payloadSize = static_cast<uint32_t>(authenticator.size()) + static_cast<uint32_t>(ticket.size());
+	std::string authenticatorBytes = authenticator.get();
+	m_payload.insert(m_payload.end(), authenticatorBytes.begin(), authenticatorBytes.end());
+	m_payload.insert(m_payload.end(), ticket.begin(), ticket.end());
 }
 
-ReconnectRequest::ReconnectRequest(const std::string& username, const ClientId& clientId)
-	: Request(clientId, 1027)
+SendMessageRequest::SendMessageRequest(const ClientId& clientId,
+                                       uint32_t msgSize,
+                                       const std::string& msgIv,
+                                       const std::string& msgContent) :
+	Request(clientId, 1029)
 {
-	std::string paddedUsername = username;
-	paddedUsername.insert(paddedUsername.end(), USERNAME_FIELD_SIZE - paddedUsername.size(), '\0');
+	m_payloadSize = static_cast<uint32_t>(clientId.size()) + sizeof(msgSize) + msgIv.size() + msgContent.size();
 
-	m_payloadSize = static_cast<uint32_t>(paddedUsername.size());
-	m_payload.insert(m_payload.end(), paddedUsername.begin(), paddedUsername.end());
-}
-
-SendFileRequest::SendFileRequest(const std::string& fileName, const ClientId& clientId, const Buffer& messageContent)
-	: Request(clientId, 1028)
-{
-	const auto contentSize = static_cast<uint32_t>(messageContent.size());
-
-	std::string paddedFileName = fileName;
-	paddedFileName.insert(paddedFileName.end(), FILENAME_FIELD_SIZE - paddedFileName.size(), '\0');
-
-	m_payloadSize = sizeof(contentSize) + static_cast<uint32_t>(paddedFileName.size()) + static_cast<uint32_t>(messageContent.size());
-		
-	for (size_t i = 0; i < sizeof(uint32_t); ++i)
+	for (size_t i = 0; i < sizeof(msgSize); ++i)
 	{
-		auto byte = static_cast<uint8_t>((contentSize >> (i * 8)) & 0xFF);
+		auto byte = static_cast<uint8_t>((msgSize >> (i * 8)) & 0xFF);
 		m_payload.push_back(byte);
 	}
-	m_payload.insert(m_payload.end(), paddedFileName.begin(), paddedFileName.end());
-	m_payload.insert(m_payload.end(), messageContent.begin(), messageContent.end());
-}
 
-CrcRequest::CrcRequest(const std::string& fileName, const ClientId& clientId, uint16_t code)
-	: Request(clientId, code)
-{
-	std::string paddedFileName = fileName;
-	paddedFileName.insert(paddedFileName.end(), FILENAME_FIELD_SIZE - paddedFileName.size(), '\0');
-
-	m_payloadSize = static_cast<uint32_t>(paddedFileName.size());
-	m_payload.insert(m_payload.end(), paddedFileName.begin(), paddedFileName.end());
-}
-
-ValidCrcRequest::ValidCrcRequest(const std::string& fileName, const ClientId& clientId)
-	: CrcRequest(fileName, clientId, 1029)
-{
-}
-
-InvalidCrcRequest::InvalidCrcRequest(const std::string& fileName, const ClientId& clientId)
-	: CrcRequest(fileName, clientId, 1030)
-{
-}
-
-LastInvalidCrcRequest::LastInvalidCrcRequest(const std::string& fileName, const ClientId& clientId)
-	: CrcRequest(fileName, clientId, 1031)
-{
+	m_payload.insert(m_payload.end(), msgIv.begin(), msgIv.end());
+	m_payload.insert(m_payload.end(), msgContent.begin(), msgContent.end());
 }

@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Defs.h"
+#include "AesWrapper.h"
+#include "Time.h"
 
 #include <string>
+#include <cstdint>
 
 constexpr int USERNAME_FIELD_SIZE = 255;
 constexpr int PASSWORD_FIELD_SIZE = 255;
@@ -23,6 +26,7 @@ protected:
 	Buffer m_payload;
 };
 
+// requests to Authentication Server
 
 class RegistrationRequest : public Request
 {
@@ -39,46 +43,71 @@ public:
 	                             const uint64_t& nonce);
 };
 
+// requests to Messaging Server
 
-
-class ClientPublicKeyRequest : public Request
+class Authenticator
 {
 public:
-	ClientPublicKeyRequest(const std::string& username, const ClientId& clientId, const std::string& publicKey);
+	Authenticator(const std::string& aesKey, const ClientId& clientId, const ServerId& serverId)
+		: m_version(static_cast<std::byte>(24)),
+		  m_clientId(clientId),
+		  m_serverId(serverId),
+		  m_creationTime(getCurrentTimestamp())
+	{
+		std::string toEncrypt;
+		toEncrypt += static_cast<char>(m_version);
+		toEncrypt += std::string(reinterpret_cast<char*>(m_clientId.data()), m_clientId.size());
+		toEncrypt += std::string(reinterpret_cast<char*>(m_serverId.data()), m_serverId.size());
+		for (size_t i = 0; i < sizeof(m_creationTime); ++i)
+		{
+			auto byte = static_cast<uint8_t>((m_creationTime >> (i * 8)) & 0xFF);
+			toEncrypt += byte;
+		}
+
+		AesWrapper aesWrapper(aesKey);
+
+		auto [encrypted, authenticatorIv] = aesWrapper.encrypt(toEncrypt.data(), toEncrypt.size());
+		m_encrypted = encrypted;
+		m_authenticatorIv = authenticatorIv;
+	}
+
+	[[nodiscard]] size_t size() const
+	{
+		return m_authenticatorIv.size() + m_encrypted.size();
+	}
+
+	[[nodiscard]] std::string get() const
+	{
+		std::string out;
+		out += m_authenticatorIv;
+		out += m_encrypted;
+
+		return out;
+	}
+
+private:
+	std::string m_authenticatorIv;
+	std::byte m_version;
+	ClientId m_clientId;
+	ServerId m_serverId;
+	int64_t m_creationTime;
+
+	std::string m_encrypted;
 };
 
-class ReconnectRequest : public Request
+class SendSymmetricKeyRequest : public Request
 {
 public:
-	explicit ReconnectRequest(const std::string& username, const ClientId& clientId);
+	explicit SendSymmetricKeyRequest(const ClientId& clientId,
+	                                 const Authenticator& authenticator,
+	                                 const std::string& ticket);
 };
 
-class SendFileRequest : public Request
+class SendMessageRequest : public Request
 {
 public:
-	SendFileRequest(const std::string& fileName, const ClientId& clientId, const Buffer& messageContent);
-};
-
-class CrcRequest : public Request
-{
-protected:
-	CrcRequest(const std::string& fileName, const ClientId& clientId, uint16_t code);
-};
-
-class ValidCrcRequest : public CrcRequest
-{
-public:
-	ValidCrcRequest(const std::string& fileName, const ClientId& clientId);
-};
-
-class InvalidCrcRequest : public CrcRequest
-{
-public:
-	InvalidCrcRequest(const std::string& fileName, const ClientId& clientId);
-};
-
-class LastInvalidCrcRequest : public CrcRequest
-{
-public:
-	LastInvalidCrcRequest(const std::string& fileName, const ClientId& clientId);
+	explicit SendMessageRequest(const ClientId& clientId,
+	                            uint32_t msgSize,
+	                            const std::string& msgIv,
+	                            const std::string& msgContent);
 };

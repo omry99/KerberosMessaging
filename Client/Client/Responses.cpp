@@ -82,9 +82,15 @@ int RegistrationSuccessResponse::getExpectedCode()
 	return 1600;
 }
 
-SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize): NonEmptyResponse(buffer, bufferSize)
+SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize)
+	: NonEmptyResponse(buffer, bufferSize)
 {
-	m_encryptedAesKey = std::string(payload.data() + m_clientId.size(), payloadSize - m_clientId.size());
+	// TODO: const
+	m_encryptedKey = std::string(payload.data() + m_clientId.size(), 80);
+	m_ticket = std::string(payload.data() + m_clientId.size() + m_encryptedKey.size(), payloadSize - m_clientId.size() - m_encryptedKey.size());
+	int ticketSize = 121;
+	//m_ticket.resize(ticketSize);
+	//std::memcpy(payload.data(), buffer + payloadOffset, payloadSize);
 }
 
 SymmetricKeyResponse::SymmetricKeyResponse(const Buffer& buffer)
@@ -97,16 +103,50 @@ int SymmetricKeyResponse::getExpectedCode()
 	return 1603;
 }
 
-std::string SymmetricKeyResponse::getEncryptedAesKey() const
+std::string SymmetricKeyResponse::getEncryptedKey() const
 {
-	return m_encryptedAesKey;
+	return m_encryptedKey;
+}
+
+std::string SymmetricKeyResponse::getTicket() const
+{
+	return m_ticket;
 }
 
 
+ReceivedSymmetricKeyResponse::ReceivedSymmetricKeyResponse(const char* buffer, size_t bufferSize)
+	: Response(buffer, bufferSize)
+{
+}
+
+ReceivedSymmetricKeyResponse::ReceivedSymmetricKeyResponse(const Buffer& buffer)
+	: ReceivedSymmetricKeyResponse(buffer.data(), buffer.size())
+{
+}
+
+int ReceivedSymmetricKeyResponse::getExpectedCode()
+{
+	return 1604;
+}
 
 
+ReceivedMessageResponse::ReceivedMessageResponse(const char* buffer, size_t bufferSize)
+	: Response(buffer, bufferSize)
+{
+}
+
+ReceivedMessageResponse::ReceivedMessageResponse(const Buffer& buffer)
+	: ReceivedMessageResponse(buffer.data(), buffer.size())
+{
+}
+
+int ReceivedMessageResponse::getExpectedCode()
+{
+	return 1605;
+}
 
 
+// DELETE
 
 int AcceptReconnectResponse::getExpectedCode()
 {

@@ -56,23 +56,45 @@ public:
 
 	[[nodiscard]] static int getExpectedCode();
 
-	[[nodiscard]] std::string getEncryptedAesKey() const;
+	[[nodiscard]] std::string getEncryptedKey() const;
+
+	[[nodiscard]] std::string getTicket() const;
 
 private:
-	std::string m_encryptedAesKey;
+	// TODO: Buffers?
+	std::string m_encryptedKey;
+	std::string m_ticket;
+};
+
+class ReceivedSymmetricKeyResponse : public Response
+{
+public:
+	ReceivedSymmetricKeyResponse(const char* buffer, size_t bufferSize);
+
+	explicit ReceivedSymmetricKeyResponse(const Buffer& buffer);
+
+	[[nodiscard]] static int getExpectedCode();
+};
+
+class ReceivedMessageResponse : public Response
+{
+public:
+	ReceivedMessageResponse(const char* buffer, size_t bufferSize);
+
+	explicit ReceivedMessageResponse(const Buffer& buffer);
+
+	[[nodiscard]] static int getExpectedCode();
 };
 
 
 
 
-
-
-
+// TODO: delete
 
 class AcceptReconnectResponse final : public SymmetricKeyResponse
 {
 public:
-	// Some c'tors
+	// Same c'tors
 	using SymmetricKeyResponse::SymmetricKeyResponse;
 
 	[[nodiscard]] static int getExpectedCode();
@@ -81,7 +103,7 @@ public:
 class RejectedReconnectResponse final : public NonEmptyResponse
 {
 public:
-	// Some c'tors
+	// Same c'tors
 	using NonEmptyResponse::NonEmptyResponse;
 
 	[[nodiscard]] static int getExpectedCode();
