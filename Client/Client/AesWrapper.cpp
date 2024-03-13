@@ -42,8 +42,6 @@ const unsigned char* AesWrapper::getKey() const
 
 std::pair<std::string, std::string> AesWrapper::encrypt(const char* plain, uint32_t length)
 {
-	//CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE] = {0};
-	// Generate a random IV
 	CryptoPP::AutoSeededRandomPool prng;
 	CryptoPP::byte iv[CryptoPP::AES::BLOCKSIZE];
 	prng.GenerateBlock(iv, sizeof(iv));

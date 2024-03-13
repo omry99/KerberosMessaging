@@ -21,7 +21,7 @@ private:
 public:
 	RsaPublicWrapper(const char* key, unsigned int length);
 	RsaPublicWrapper(const std::string& key);
-	~RsaPublicWrapper();
+	~RsaPublicWrapper() = default;
 
 	std::string getPublicKey() const;
 	char* getPublicKey(char* keyOut, unsigned int length) const;

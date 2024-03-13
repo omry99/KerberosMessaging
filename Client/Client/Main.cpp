@@ -10,7 +10,6 @@ int main()
 		AutoWsa wsa;
 
 		MessageClient messageClient;
-		messageClient.sendFile();
 	}
 	catch (const std::exception& exception)
 	{

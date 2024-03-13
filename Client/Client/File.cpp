@@ -4,27 +4,6 @@
 #include <filesystem>
 #include <sstream>
 
-Buffer readBinaryFile(const std::string& filePath)
-{
-	if (!std::filesystem::exists(filePath)) 
-	{
-		throw std::runtime_error(filePath + "does not exist");
-	}
-
-	const size_t fileSize = std::filesystem::file_size(filePath);
-
-	std::ifstream fileStream(filePath.c_str(), std::ios::binary);
-	if (!fileStream.is_open())
-	{
-		throw std::runtime_error("Failed to open " + filePath);
-	}
-
-	Buffer fileContent(fileSize);
-	fileStream.read(fileContent.data(), static_cast<int64_t>(fileSize));
-
-	return fileContent;
-}
-
 std::vector<std::string> readFileLines(const std::string& filePath)
 {
 	std::vector<std::string> lines;

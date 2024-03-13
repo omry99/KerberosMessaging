@@ -169,7 +169,7 @@
     <ClInclude Include="AutoWsa.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="Requests.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="TimeUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

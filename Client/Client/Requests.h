@@ -2,7 +2,7 @@
 
 #include "Defs.h"
 #include "AesWrapper.h"
-#include "Time.h"
+#include "TimeUtils.h"
 
 #include <string>
 #include <cstdint>
@@ -61,12 +61,12 @@ public:
 		for (size_t i = 0; i < sizeof(m_creationTime); ++i)
 		{
 			auto byte = static_cast<uint8_t>((m_creationTime >> (i * 8)) & 0xFF);
-			toEncrypt += byte;
+			toEncrypt += static_cast<char>(byte);
 		}
 
 		AesWrapper aesWrapper(aesKey);
 
-		auto [encrypted, authenticatorIv] = aesWrapper.encrypt(toEncrypt.data(), toEncrypt.size());
+		auto [encrypted, authenticatorIv] = aesWrapper.encrypt(toEncrypt.data(), static_cast<uint32_t>(toEncrypt.size()));
 		m_encrypted = encrypted;
 		m_authenticatorIv = authenticatorIv;
 	}

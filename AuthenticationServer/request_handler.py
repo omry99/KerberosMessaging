@@ -110,12 +110,11 @@ class RequestHandler:
             msg_server_id = uuid.UUID(hex=lines[MSG_SERVER_ID_LINE_NUM].strip())
             b64_enc_msg_server_key = lines[MSG_SERVER_KEY_LINE_NUM]
         msg_server_key = base64.b64decode(b64_enc_msg_server_key)
-        # TODO: rename iv. is this even the right iv?
-        iv, aes_key_enc_with_msg_server_key = encrypt_aes_cbc(data=aes_key, key=msg_server_key)
+        ticket_iv, aes_key_enc_with_msg_server_key = encrypt_aes_cbc(data=aes_key, key=msg_server_key)
         exp_time = int(time.time()) + TEN_MIN_IN_SEC
         _, enc_exp_time = encrypt_aes_cbc(data=exp_time.to_bytes(EXPIRE_TIME_LEN, 'little'), key=msg_server_key)
 
-        ticket_obj = Ticket(request.client_id, msg_server_id.bytes, iv, aes_key_enc_with_msg_server_key,
+        ticket_obj = Ticket(request.client_id, msg_server_id.bytes, ticket_iv, aes_key_enc_with_msg_server_key,
                             enc_exp_time)
 
         return SymmetricKeyResponse(request.client_id, encrypted_aes_key_obj, ticket_obj)

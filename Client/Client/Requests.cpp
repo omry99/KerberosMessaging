@@ -73,7 +73,8 @@ SendMessageRequest::SendMessageRequest(const ClientId& clientId,
                                        const std::string& msgContent) :
 	Request(clientId, 1029)
 {
-	m_payloadSize = static_cast<uint32_t>(clientId.size()) + sizeof(msgSize) + msgIv.size() + msgContent.size();
+	m_payloadSize = static_cast<uint32_t>(clientId.size()) + sizeof(msgSize) + static_cast<uint32_t>(msgIv.size()) +
+		static_cast<uint32_t>(msgContent.size());
 
 	for (size_t i = 0; i < sizeof(msgSize); ++i)
 	{

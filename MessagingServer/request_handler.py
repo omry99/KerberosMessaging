@@ -1,18 +1,12 @@
-import base64
 import logging
-import uuid
-import time
 import base64
 
 from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import unpad
-from Crypto.Hash import SHA256
 
 from requests import *
 from responses import *
 from responses import Response
-from user_client import UserClient
 
 logger = logging.getLogger(__name__)
 
@@ -67,13 +61,13 @@ class RequestHandler:
         encrypted_exp_timestamp = ticket[41+48:]
         self.aes_key = decrypt_aes_cbc(iv, encrypted_aes_key, msg_server_key)
         #exp_timestamp = decrypt_aes_cbc(iv, encrypted_exp_timestamp, msg_server_key)
+        #print(exp_timestamp)
 
         return ReceivedSymmetricKeyResponse()
 
     def _handle_send_msg_request(self, request: SendMessageRequest) -> Response:
         encrypted_msg = request.msg_content
         msg = decrypt_aes_cbc(request.msg_iv, encrypted_msg, self.aes_key)
-        #msg = decrypt_aes_cbc(b"\x00" * 16, encrypted_msg, self.aes_key)
-        print(msg.decode())
+        print(f"Received message: {msg.decode()}")
 
         return ReceivedMessageResponse()

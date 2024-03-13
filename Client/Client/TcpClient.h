@@ -14,11 +14,10 @@ class TcpClient
 public:
 	TcpClient();
 
-	//DELETE_COPY(TcpClient);
-	//TcpClient(TcpClient&) = default;
+	DELETE_COPY(TcpClient);
 
-	//DELETE_MOVE(TcpClient);
-	//TcpClient(TcpClient&&) = default;
+	TcpClient(TcpClient&&) = default;
+	TcpClient& operator=(TcpClient&&) = default;
 
 	~TcpClient();
 

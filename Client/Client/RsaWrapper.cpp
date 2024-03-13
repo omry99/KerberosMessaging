@@ -13,10 +13,6 @@ RsaPublicWrapper::RsaPublicWrapper(const std::string& key)
 	_publicKey.Load(ss);
 }
 
-RsaPublicWrapper::~RsaPublicWrapper()
-{
-}
-
 std::string RsaPublicWrapper::getPublicKey() const
 {
 	std::string key;
@@ -65,10 +61,6 @@ RsaPrivateWrapper::RsaPrivateWrapper(const std::string& key)
 {
 	CryptoPP::StringSource ss(key, true);
 	_privateKey.Load(ss);
-}
-
-RsaPrivateWrapper::~RsaPrivateWrapper()
-{
 }
 
 std::string RsaPrivateWrapper::getPrivateKey() const

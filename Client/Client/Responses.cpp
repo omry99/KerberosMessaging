@@ -88,9 +88,6 @@ SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize
 	// TODO: const
 	m_encryptedKey = std::string(payload.data() + m_clientId.size(), 80);
 	m_ticket = std::string(payload.data() + m_clientId.size() + m_encryptedKey.size(), payloadSize - m_clientId.size() - m_encryptedKey.size());
-	int ticketSize = 121;
-	//m_ticket.resize(ticketSize);
-	//std::memcpy(payload.data(), buffer + payloadOffset, payloadSize);
 }
 
 SymmetricKeyResponse::SymmetricKeyResponse(const Buffer& buffer)
@@ -143,42 +140,4 @@ ReceivedMessageResponse::ReceivedMessageResponse(const Buffer& buffer)
 int ReceivedMessageResponse::getExpectedCode()
 {
 	return 1605;
-}
-
-
-// DELETE
-
-int AcceptReconnectResponse::getExpectedCode()
-{
-	return 2105;
-}
-
-int RejectedReconnectResponse::getExpectedCode()
-{
-	return 2106;
-}
-
-ReceivedFileResponse::ReceivedFileResponse(const char* buffer, size_t bufferSize)
-	: NonEmptyResponse(buffer, bufferSize),
-	  m_contentSize(0),
-	  m_checksum(0)
-{
-	std::memcpy(m_clientId.data(), payload.data(), m_clientId.size());
-	std::memcpy(&m_contentSize, payload.data() + m_clientId.size(), sizeof(m_contentSize));
-	m_fileName = std::string(payload.data() + m_clientId.size() + sizeof m_contentSize, 255);
-	std::memcpy(&m_checksum, payload.data() + m_clientId.size() + sizeof(m_contentSize) + m_fileName.size(), sizeof(m_checksum));
-}
-
-ReceivedFileResponse::ReceivedFileResponse(const Buffer& buffer): ReceivedFileResponse(buffer.data(), buffer.size())
-{
-}
-
-int ReceivedFileResponse::getExpectedCode()
-{
-	return 2103;
-}
-
-uint32_t ReceivedFileResponse::getChecksum() const
-{
-	return m_checksum;
 }
