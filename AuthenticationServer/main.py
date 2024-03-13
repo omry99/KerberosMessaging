@@ -5,6 +5,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(leve
 
 
 def main():
+    # TODO: remove this
     import os
     os.system("del clients /f")
     os.system(

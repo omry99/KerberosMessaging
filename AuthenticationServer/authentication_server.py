@@ -2,6 +2,8 @@ import logging
 import socket
 from pathlib import Path
 import threading
+import base64
+import uuid
 
 from requests import create_request_from_data
 from request_handler import RequestHandler
@@ -15,6 +17,9 @@ MIN_PORT = 1025
 MAX_PORT = 65535
 LOCALHOST = '127.0.0.1'
 CLIENTS_DATA_FILE_NAME = "clients"
+MSG_SERVER_INFO_FILE_NAME = "msg.info"
+MSG_SERVER_ID_LINE_NUM = 2
+MSG_SERVER_KEY_LINE_NUM = 3
 BUFFER_SIZE = 1024
 
 CLIENT_ID_FIELD_END_INDEX = 16
@@ -42,6 +47,15 @@ class AuthenticationServer:
         else:
             logger.warning(f"{CONFIG_FILE_NAME} does not exist, using default port {DEFAULT_PORT}")
             self.port = DEFAULT_PORT
+
+        if Path(MSG_SERVER_INFO_FILE_NAME).is_file():
+            with open(MSG_SERVER_INFO_FILE_NAME, 'r') as f:
+                lines = f.readlines()
+                self.msg_server_id = uuid.UUID(hex=lines[MSG_SERVER_ID_LINE_NUM].strip())
+                b64_enc_msg_server_key = lines[MSG_SERVER_KEY_LINE_NUM]
+                self.msg_server_key = base64.b64decode(b64_enc_msg_server_key)
+        else:
+            raise Exception(f"{MSG_SERVER_INFO_FILE_NAME} does not exist, aborting")
 
         self.users_data = {}
         self._init_ram_records()

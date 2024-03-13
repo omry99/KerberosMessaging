@@ -86,7 +86,7 @@ SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize
 	: NonEmptyResponse(buffer, bufferSize)
 {
 	// TODO: const
-	m_encryptedKey = std::string(payload.data() + m_clientId.size(), 80);
+	m_encryptedKey = std::string(payload.data() + m_clientId.size(), 64);
 	m_ticket = std::string(payload.data() + m_clientId.size() + m_encryptedKey.size(), payloadSize - m_clientId.size() - m_encryptedKey.size());
 }
 

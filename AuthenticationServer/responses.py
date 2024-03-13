@@ -1,7 +1,5 @@
 import struct
 
-from encrypted_key import EncryptedKey
-from ticket import Ticket
 from server_version import SERVER_VERSION
 
 
@@ -39,8 +37,8 @@ class RegistrationFailedResponse(Response):
 
 
 class SymmetricKeyResponse(Response):
-    def __init__(self, client_id: bytes, enc_aes_key: EncryptedKey, ticket: Ticket) -> None:
-        super().__init__(code=1603, payload=client_id + enc_aes_key.pack() + ticket.pack())
+    def __init__(self, client_id: bytes, enc_aes_key: bytes, ticket: bytes) -> None:
+        super().__init__(code=1603, payload=client_id + enc_aes_key + ticket)
 
 
 class GeneralFailureResponse(Response):
