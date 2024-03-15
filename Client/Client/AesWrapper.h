@@ -2,6 +2,8 @@
 
 #include "Macros.h"
 
+#include <aes.h>
+
 #include <cstdint>
 #include <string>
 

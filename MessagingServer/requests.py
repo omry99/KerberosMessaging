@@ -11,6 +11,11 @@ PAYLOAD_SIZE_END_INDEX = 23
 USER_NAME_END_INDEX = 255
 SERVER_ID_END_INDEX = 16
 
+AUTHENTICATOR_END_INDEX = 64
+
+MSG_END_INDEX = 4
+MSG_IV_END_INDEX = 4+16
+
 
 class Request:
     def __init__(self, data: bytes) -> None:
@@ -38,14 +43,13 @@ def create_request_from_data(data: bytes) -> Request:
 class SendSymmetricKeyRequest(Request):
     def __init__(self, data: bytes) -> None:
         super().__init__(data=data)
-        self.authenticator = self.payload[:64]
-        self.ticket = self.payload[64:]
+        self.authenticator = self.payload[:AUTHENTICATOR_END_INDEX]
+        self.ticket = self.payload[AUTHENTICATOR_END_INDEX:]
 
 
 class SendMessageRequest(Request):
     def __init__(self, data: bytes) -> None:
         super().__init__(data=data)
-        # TODO: const
-        self.msg_size = self.payload[:4]
-        self.msg_iv = self.payload[4:4+16]
-        self.msg_content = self.payload[4+16:]
+        self.msg_size = self.payload[:MSG_END_INDEX]
+        self.msg_iv = self.payload[MSG_END_INDEX:MSG_IV_END_INDEX]
+        self.msg_content = self.payload[MSG_IV_END_INDEX:]

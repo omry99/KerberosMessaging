@@ -145,26 +145,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AesWrapper.cpp" />
-    <ClCompile Include="Base64Wrapper.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="MessageClient.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Requests.cpp" />
     <ClCompile Include="Responses.cpp" />
-    <ClCompile Include="RsaWrapper.cpp" />
     <ClCompile Include="TcpClient.cpp" />
     <ClCompile Include="AutoWsa.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AesWrapper.h" />
-    <ClInclude Include="Base64Wrapper.h" />
+    <ClInclude Include="Authenticator.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="MessageClient.h" />
     <ClInclude Include="Defs.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Responses.h" />
-    <ClInclude Include="RsaWrapper.h" />
     <ClInclude Include="TcpClient.h" />
     <ClInclude Include="AutoWsa.h" />
     <ClInclude Include="Macros.h" />

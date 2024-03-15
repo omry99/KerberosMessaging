@@ -61,7 +61,6 @@ public:
 	[[nodiscard]] std::string getTicket() const;
 
 private:
-	// TODO: Buffers?
 	std::string m_encryptedKey;
 	std::string m_ticket;
 };

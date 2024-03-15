@@ -5,12 +5,6 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(leve
 
 
 def main():
-    # TODO: remove this
-    import os
-    os.system("del clients /f")
-    os.system(
-         'del \"D:\\Files\\University\\מבוא לאבטחת המרחב המקוון\\ממן 16\\KerberosMessaging\\Client\\Client\\me.info\" /f')
-
     authenticaion_server = AuthenticationServer()
     authenticaion_server.serve()
 

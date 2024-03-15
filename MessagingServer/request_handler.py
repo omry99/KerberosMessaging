@@ -29,8 +29,7 @@ AUTHENTICATOR_IV_SIZE = 16
 AES_KEY_LEN = 32
 
 
-# TODO: rename everything to differ between serers?
-class RequestHandler:
+class MsgRequestHandler:
     def __init__(self, msg_server) -> None:
         self.users_data = msg_server.users_data
         self.msg_server_key = msg_server.msg_server_key
@@ -45,6 +44,8 @@ class RequestHandler:
         return response
 
     def _handle_send_symmetric_key_request(self, request: SendSymmetricKeyRequest) -> Response:
+        logger.info(f"Got a send symmetric key request from")
+
         ticket = request.ticket
         ticket_client_id = ticket[CLIENT_ID_START_INDEX:CLIENT_ID_END_INDEX]
         ticket_iv = ticket[TICKET_IV_START_INDEX:TICKET_IV_END_INDEX]

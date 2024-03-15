@@ -6,7 +6,7 @@ import base64
 import uuid
 
 from requests import create_request_from_data
-from request_handler import RequestHandler
+from request_handler import AuthRequestHandler
 from user_client import UserClient
 
 logger = logging.getLogger(__name__)
@@ -22,14 +22,10 @@ MSG_SERVER_ID_LINE_NUM = 2
 MSG_SERVER_KEY_LINE_NUM = 3
 BUFFER_SIZE = 1024
 
-CLIENT_ID_FIELD_END_INDEX = 16
-USER_NAME_FIELD_SIZE = 255
-USER_NAME_FIELD_START_INDEX = CLIENT_ID_FIELD_END_INDEX
-USER_NAME_FIELD_END_INDEX = USER_NAME_FIELD_START_INDEX + USER_NAME_FIELD_SIZE
-PASS_HASH_FIELD_SIZE = 32
-PASS_HASH_FIELD_START_INDEX = USER_NAME_FIELD_END_INDEX
-PASS_HASH_FIELD_END_INDEX = PASS_HASH_FIELD_START_INDEX + PASS_HASH_FIELD_SIZE
-LAST_SEEN_FIELD_START_INDEX = PASS_HASH_FIELD_END_INDEX
+CLIENT_ENTRY_CLIENT_ID_INDEX = 0
+CLIENT_ENTRY_USER_NAME_INDEX = 1
+CLIENT_ENTRY_PASS_HASH_INDEX = 2
+CLIENT_ENTRY_LAST_SEEN_INDEX = 3
 
 
 class AuthenticationServer:
@@ -59,7 +55,7 @@ class AuthenticationServer:
 
         self.users_data = {}
         self._init_ram_records()
-        self.request_handler = RequestHandler(self)
+        self.request_handler = AuthRequestHandler(self)
 
     def serve(self) -> None:
         logger.info(f'Listening for clients on port {self.port}...')
@@ -92,10 +88,11 @@ class AuthenticationServer:
             with open(CLIENTS_DATA_FILE_NAME, 'r') as f:
                 client_entries = f.readlines()
             for client_entry in client_entries:
-                client_id = client_entry[:CLIENT_ID_FIELD_END_INDEX].encode()
-                user_name = client_entry[USER_NAME_FIELD_START_INDEX:USER_NAME_FIELD_END_INDEX]
-                pass_hash = client_entry[PASS_HASH_FIELD_START_INDEX:PASS_HASH_FIELD_END_INDEX]
-                last_seen = client_entry[LAST_SEEN_FIELD_START_INDEX:]
+                split_client_entry = client_entry.split(':')
+                client_id = bytes.fromhex(split_client_entry[CLIENT_ENTRY_CLIENT_ID_INDEX])
+                user_name = split_client_entry[CLIENT_ENTRY_USER_NAME_INDEX]
+                pass_hash = split_client_entry[CLIENT_ENTRY_PASS_HASH_INDEX]
+                last_seen = split_client_entry[CLIENT_ENTRY_LAST_SEEN_INDEX]
                 user_client = UserClient(client_id, user_name, pass_hash, last_seen)
                 self.users_data[client_id] = user_client
 

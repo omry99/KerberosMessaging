@@ -17,9 +17,7 @@ from server_version import SERVER_VERSION_BYTES
 logger = logging.getLogger(__name__)
 
 AES_KEY_LENGTH_IN_BYTES = 32
-BUFFER_SIZE = 1024
 TEN_MIN_IN_SEC = 600
-EXPIRE_TIME_LEN = 8
 
 CLIENTS_DATA_FILE_NAME = "clients"
 
@@ -27,7 +25,7 @@ UUID_FIELD_INDEX = 0
 LAST_SEEN_FIELD_INDEX = -1
 
 
-class RequestHandler:
+class AuthRequestHandler:
     def __init__(self, auth_server) -> None:
         self.users_data = auth_server.users_data
         self.msg_server_id = auth_server.msg_server_id

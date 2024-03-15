@@ -85,8 +85,8 @@ int RegistrationSuccessResponse::getExpectedCode()
 SymmetricKeyResponse::SymmetricKeyResponse(const char* buffer, size_t bufferSize)
 	: NonEmptyResponse(buffer, bufferSize)
 {
-	// TODO: const
-	m_encryptedKey = std::string(payload.data() + m_clientId.size(), 64);
+	constexpr int ENCRYPTED_KEY_SIZE = 64;
+	m_encryptedKey = std::string(payload.data() + m_clientId.size(), ENCRYPTED_KEY_SIZE);
 	m_ticket = std::string(payload.data() + m_clientId.size() + m_encryptedKey.size(), payloadSize - m_clientId.size() - m_encryptedKey.size());
 }
 

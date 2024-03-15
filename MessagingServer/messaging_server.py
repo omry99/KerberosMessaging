@@ -2,11 +2,9 @@ import logging
 import socket
 import threading
 import base64
-from pathlib import Path
 
 from requests import create_request_from_data
-from request_handler import RequestHandler
-from user_client import UserClient
+from request_handler import MsgRequestHandler
 
 logger = logging.getLogger(__name__)
 
@@ -16,17 +14,7 @@ MSG_SERVER_KEY_LINE_NUM = 3
 MIN_PORT = 1025
 MAX_PORT = 65535
 LOCALHOST = '127.0.0.1'
-CLIENTS_DATA_FILE_NAME = "clients"
 BUFFER_SIZE = 1024
-
-CLIENT_ID_FIELD_END_INDEX = 16
-USER_NAME_FIELD_SIZE = 255
-USER_NAME_FIELD_START_INDEX = CLIENT_ID_FIELD_END_INDEX
-USER_NAME_FIELD_END_INDEX = USER_NAME_FIELD_START_INDEX + USER_NAME_FIELD_SIZE
-PASS_HASH_FIELD_SIZE = 32
-PASS_HASH_FIELD_START_INDEX = USER_NAME_FIELD_END_INDEX
-PASS_HASH_FIELD_END_INDEX = PASS_HASH_FIELD_START_INDEX + PASS_HASH_FIELD_SIZE
-LAST_SEEN_FIELD_START_INDEX = PASS_HASH_FIELD_END_INDEX
 
 
 class MessagingServer:
@@ -44,8 +32,7 @@ class MessagingServer:
             self.port = int(port)
 
         self.users_data = {}
-        self._init_ram_records()
-        self.request_handler = RequestHandler(self)
+        self.request_handler = MsgRequestHandler(self)
 
     def serve(self) -> None:
         logger.info(f'Listening for clients on port {self.port}...')
@@ -71,19 +58,6 @@ class MessagingServer:
                 response = self.request_handler.handle_request(request)
                 if response:
                     conn.sendall(response.pack())
-
-    def _init_ram_records(self) -> None:
-        if Path(CLIENTS_DATA_FILE_NAME).is_file():
-            logger.info('Loading disk records into RAM...')
-            with open(CLIENTS_DATA_FILE_NAME, 'r') as f:
-                client_entries = f.readlines()
-            for client_entry in client_entries:
-                client_id = client_entry[:CLIENT_ID_FIELD_END_INDEX].encode()
-                user_name = client_entry[USER_NAME_FIELD_START_INDEX:USER_NAME_FIELD_END_INDEX]
-                pass_hash = client_entry[PASS_HASH_FIELD_START_INDEX:PASS_HASH_FIELD_END_INDEX]
-                last_seen = client_entry[LAST_SEEN_FIELD_START_INDEX:]
-                user_client = UserClient(client_id, user_name, pass_hash, last_seen)
-                self.users_data[client_id] = user_client
 
     def _recv_all_data(self, conn: socket) -> bytes:
         data = b""
