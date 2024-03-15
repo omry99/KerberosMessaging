@@ -44,7 +44,7 @@ class MsgRequestHandler:
         return response
 
     def _handle_send_symmetric_key_request(self, request: SendSymmetricKeyRequest) -> Response:
-        logger.info(f"Got a send symmetric key request from")
+        logger.info(f"Got a send symmetric key request")
 
         ticket = request.ticket
         ticket_client_id = ticket[CLIENT_ID_START_INDEX:CLIENT_ID_END_INDEX]
