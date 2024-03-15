@@ -112,7 +112,7 @@ class AuthRequestHandler:
         for line_num, line in enumerate(lines):
             parts = line.strip().split(':')
             if parts[UUID_FIELD_INDEX] == uuid.UUID(bytes=client_id).hex:
-                parts[LAST_SEEN_FIELD_INDEX] = time.time()
+                parts[LAST_SEEN_FIELD_INDEX] = str(time.time())
                 lines[line_num] = ':'.join(parts) + '\n'
                 break
         with open(CLIENTS_DATA_FILE_NAME, 'w') as file:
