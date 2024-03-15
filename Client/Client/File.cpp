@@ -46,7 +46,7 @@ void writeToFile(const std::string& filePath, const std::string& strToWrite, boo
 	outputFile << strToWrite;
 }
 
-void writeToBinaryFile(const std::string& filePath, const std::string& strToWrite)
+void writeToBinaryFile(const std::string& filePath, const Buffer& strToWrite)
 {
 	std::ofstream outputFile(filePath, std::ios::binary);
 	if (!outputFile.is_open())
@@ -54,5 +54,5 @@ void writeToBinaryFile(const std::string& filePath, const std::string& strToWrit
 		throw std::runtime_error("Failed to open " + filePath);
 	}
 
-	outputFile << strToWrite;
+	outputFile.write(strToWrite.data(), strToWrite.size());
 }
