@@ -56,12 +56,12 @@ class AuthRequestHandler:
         pass_hash = SHA256.new(request.password.encode()).digest()
 
         # Add the user to the disk records
-        client_entry = f"{client_id.hex}:{user_name}:{pass_hash.hex()}:{time.ctime()}\n"
+        client_entry = f"{client_id.hex}:{user_name}:{pass_hash.hex()}:{time.time()}\n"
         with open(CLIENTS_DATA_FILE_NAME, 'a') as f:
             f.write(client_entry)
 
         # Add the user to RAM records
-        user_client = UserClient(client_id.bytes, user_name, pass_hash.hex(), time.ctime())
+        user_client = UserClient(client_id.bytes, user_name, pass_hash.hex(), time.time())
         self.users_data[client_id.bytes] = user_client
 
         logger.info(f"User {user_name} added to the disk and RAM records")
@@ -112,14 +112,14 @@ class AuthRequestHandler:
         for line_num, line in enumerate(lines):
             parts = line.strip().split(':')
             if parts[UUID_FIELD_INDEX] == uuid.UUID(bytes=client_id).hex:
-                parts[LAST_SEEN_FIELD_INDEX] = time.ctime()
+                parts[LAST_SEEN_FIELD_INDEX] = time.time()
                 lines[line_num] = ':'.join(parts) + '\n'
                 break
         with open(CLIENTS_DATA_FILE_NAME, 'w') as file:
             file.writelines(lines)
 
         # Update the client's LastSeen in the RAM records
-        self.users_data[client_id].last_seen = time.ctime()
+        self.users_data[client_id].last_seen = time.time()
 
         user_name = self.users_data[client_id].user_name
         logger.info(f"Updated LastSeen for {user_name} in disk and RAM records")
